@@ -35,7 +35,8 @@ FROM trnsact;
 
 # 2 b)
 SELECT st.store
-FROM strinfo st INNER JOIN skstinfo sk ON st.store=sk.store INNER JOIN store_msa ms ON sk.store = ms.store INNER JOIN trnsact tr ON ms.store = tr.store;
+FROM strinfo st INNER JOIN skstinfo sk ON st.store=sk.store INNER JOIN store_msa ms 
+ON sk.store = ms.store INNER JOIN trnsact tr ON ms.store = tr.store;
 
 SELECT COUNT(DISTINCT st.store)
 FROM strinfo st LEFT JOIN skstinfo sk ON st.store=sk.store
