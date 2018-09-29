@@ -1,1 +1,105 @@
-# Bigdata-with-MySQL
+# Week 3 : Teradata Practice Excercise Solutions
+
+# 1 a)
+SELECT COUNT(DISTINCT sku)
+FROM skuinfo;
+
+SELECT COUNT(DISTINCT sku)
+FROM skstinfo;
+
+SELECT COUNT(DISTINCT sku)
+FROM trnsact;
+
+# 1 b)
+SELECT sku, store, COUNT(*)
+FROM skstinfo
+GROUP BY sku, store;
+
+SELECT sku, store, COUNT(*)
+FROM trnsact
+GROUP BY sku, store;
+
+
+# 2 a)
+SELECT COUNT(DISTINCT store)
+FROM strinfo;
+
+SELECT COUNT(DISTINCT store)
+FROM store_msa;
+
+SELECT COUNT(DISTINCT store)
+FROM skstinfo;
+
+SELECT COUNT(DISTINCT store)
+FROM trnsact;
+
+# 2 b)
+SELECT st.store
+FROM strinfo st INNER JOIN skstinfo sk ON st.store=sk.store INNER JOIN store_msa ms ON sk.store = ms.store INNER JOIN trnsact tr ON ms.store = tr.store;
+
+SELECT COUNT(DISTINCT st.store)
+FROM strinfo st LEFT JOIN skstinfo sk ON st.store=sk.store
+WHERE sk.store IS NULL;
+
+SELECT COUNT(DISTINCT st.store)
+FROM strinfo st LEFT JOIN store_msa ms ON st.store=ms.store
+WHERE ms.store IS NULL;
+
+SELECT COUNT(DISTINCT st.store)
+FROM strinfo st LEFT JOIN trnsact tr ON st.store=tr.store
+WHERE tr.store IS NULL;
+
+
+# 3
+SELECT *
+FROM trnsact LEFT JOIN skstinfo ON trnsact.sku = skstinfo.sku
+WHERE skstinfo.sku IS NULL;
+
+
+# 4
+SELECT SUM(trnsact.amt-skstinfo.cost)/COUNT(DISTINCT trnsact.saledate) AS Profit
+FROM trnsact JOIN skstinfo on trnsact.sku=skstinfo.sku AND trnsact.store=skstinfo.store
+WHERE trnsact.stype='P' AND skstinfo.cost IS NOT NULL;
+ 
+
+# 5
+SELECT tr.saledate, SUM(sk.cost) AS TotalValue, SUM(tr.quantity) AS TotalGoods
+FROM trnsact tr JOIN skstinfo sk ON tr.sku = sk.sku AND tr.store = sk.store
+WHERE tr.stype='R'
+GROUP BY tr.saledate
+ORDER BY TotalValue DESC;
+
+ 
+# 6
+SELECT MAX(sprice) AS MaxPrice
+FROM trnsact;
+SELECT MIN(sprice) AS MinPrice
+FROM trnsact;
+
+
+# 7
+SELECT DISTINCT deptinfo.dept, deptinfo.deptdesc
+FROM deptinfo JOIN skuinfo ON deptinfo.dept=skuinfo.dept
+GROUP BY deptinfo.dept, deptinfo.deptdesc
+HAVING COUNT(DISTINCT skuinfo.brand) > 100;
+
+
+# 8
+SELECT sk.sku, d.deptdesc
+FROM skstinfo sk JOIN skuinfo s ON sk.sku=s.sku JOIN deptinfo d ON s.dept=d.dept;
+
+
+# 9
+SELECT d.deptdesc, s.brand, s.style, s.color, SUM(tr.amt) AS TotalValue
+FROM trnsact tr JOIN skuinfo s ON tr.sku=s.sku JOIN deptinfo d ON s.dept=d.dept
+WHERE tr.stype = 'R'
+GROUP BY d.deptdesc, s.brand, s.style, s.color
+ORDER BY TotalValue DESC;
+
+
+# 10
+SELECT ms.city,ms.state,ms.zip, SUM(tr.amt) AS TotalRev
+FROM trnsact tr JOIN store_msa ms ON tr.store=ms.store
+WHERE tr.stype='P'
+GROUP BY ms.city,ms.state,ms.zip
+ORDER BY TotalRev DESC;
